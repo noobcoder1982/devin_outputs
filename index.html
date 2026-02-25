@@ -3,2074 +3,894 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SKUNKWORKS // F1 AERO DIVISION</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <title>Portfolio — Designer & Developer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* ============================================
-           SKUNKWORKS F1 - SWISS BRUTALIST INTERFACE
-           Stealth-Monochrome + Telemetry Red
-           ============================================ */
-
-        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap');
-
         :root {
-            --obsidian: #080808;
-            --alumina: #F2F2F2;
-            --telemetry-red: #FF0032;
-            --glass-bg: rgba(8, 8, 8, 0.45);
-            --glass-border: rgba(242, 242, 242, 0.08);
-            --hairline: rgba(242, 242, 242, 0.12);
-            --col-width: calc((100vw - 120px - 11 * 16px) / 12);
-            --gutter: 16px;
+            --white: #FFFFFF;
+            --off-white: #FAFAFA;
+            --light-gray: #F0F0F0;
+            --mid-gray: #C8C8C8;
+            --dark-gray: #888888;
+            --charcoal: #333333;
+            --black: #111111;
+            --accent: #111111;
+            --grid-gap: 24px;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         html {
             font-size: 16px;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            scroll-behavior: smooth;
         }
 
         body {
-            background: var(--obsidian);
-            color: var(--alumina);
-            font-family: 'Space Mono', 'Courier New', monospace;
+            background: var(--white);
+            color: var(--black);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
             overflow-x: hidden;
-            cursor: crosshair;
+            line-height: 1.6;
         }
 
-        /* ---- FILM GRAIN OVERLAY ---- */
-        .film-grain {
+        ::selection { background: var(--black); color: var(--white); }
+        a { color: inherit; text-decoration: none; }
+
+        .grid-container {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 0 80px;
+        }
+
+        /* NAV */
+        .nav {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 10000;
-            opacity: 0.035;
-            mix-blend-mode: overlay;
-        }
-
-        .film-grain canvas {
-            width: 100%;
-            height: 100%;
-        }
-
-        /* ---- CHROMATIC ABERRATION EDGES ---- */
-        .chromatic-aberration {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 9999;
-            box-shadow:
-                inset 3px 0 12px rgba(255, 0, 50, 0.06),
-                inset -3px 0 12px rgba(0, 100, 255, 0.06),
-                inset 0 3px 12px rgba(255, 0, 50, 0.04),
-                inset 0 -3px 12px rgba(0, 100, 255, 0.04);
-        }
-
-        /* ---- SCANLINE OVERLAY ---- */
-        .scanlines {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 9998;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 2px,
-                rgba(0, 0, 0, 0.015) 2px,
-                rgba(0, 0, 0, 0.015) 4px
-            );
-        }
-
-        /* ============================================
-           BRUTALIST SIDEBAR NAVIGATION
-           ============================================ */
-        .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 80px;
-            height: 100vh;
-            background: rgba(8, 8, 8, 0.92);
-            backdrop-filter: blur(20px);
-            border-right: 0.5px solid var(--hairline);
+            top: 0; left: 0; width: 100%;
             z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 32px 0;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--light-gray);
         }
 
-        .sidebar-logo {
-            width: 40px;
-            height: 40px;
-            border: 1.5px solid var(--telemetry-red);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 48px;
-            position: relative;
+        .nav-inner {
+            max-width: 1440px; margin: 0 auto;
+            padding: 0 80px; height: 72px;
+            display: flex; align-items: center; justify-content: space-between;
         }
 
-        .sidebar-logo::after {
-            content: 'SK';
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            color: var(--telemetry-red);
+        .nav-logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px; font-weight: 700;
+            letter-spacing: -0.02em; color: var(--black);
         }
 
-        .sidebar-nav {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            width: 100%;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 16px 0;
-            cursor: pointer;
-            position: relative;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .nav-item::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 2px;
-            height: 0;
-            background: var(--telemetry-red);
-            transition: height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .nav-item:hover::before,
-        .nav-item.active::before {
-            height: 32px;
-        }
-
-        .nav-numeral {
-            font-size: 28px;
-            font-weight: 700;
-            line-height: 1;
-            color: rgba(242, 242, 242, 0.15);
-            transition: color 0.3s ease;
-            font-family: 'Space Mono', monospace;
-        }
-
-        .nav-item:hover .nav-numeral,
-        .nav-item.active .nav-numeral {
-            color: var(--alumina);
-        }
-
-        .nav-label {
-            font-size: 7px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: rgba(242, 242, 242, 0.25);
-            margin-top: 4px;
-            transition: color 0.3s ease;
-        }
-
-        .nav-item:hover .nav-label,
-        .nav-item.active .nav-label {
-            color: var(--telemetry-red);
-        }
-
-        .sidebar-status {
-            font-size: 7px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: rgba(242, 242, 242, 0.2);
-            writing-mode: vertical-rl;
-            text-orientation: mixed;
-            transform: rotate(180deg);
-        }
-
-        /* ============================================
-           MAIN CONTENT AREA
-           ============================================ */
-        .main-content {
-            margin-left: 80px;
-            min-height: 100vh;
-            position: relative;
-        }
-
-        /* ---- INK-TRAP TYPOGRAPHY HERO ---- */
-        .hero-section {
-            position: relative;
-            height: 100vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-        }
-
-        .ink-trap-title {
-            position: absolute;
-            top: -3vh;
-            left: -2vw;
-            font-size: clamp(120px, 18vw, 280px);
-            font-weight: 900;
-            line-height: 0.85;
-            letter-spacing: -0.04em;
-            color: var(--alumina);
-            opacity: 0.06;
-            font-family: 'Space Mono', monospace;
-            white-space: nowrap;
-            pointer-events: none;
-            user-select: none;
-        }
-
-        .ink-trap-secondary {
-            position: absolute;
-            bottom: 18vh;
-            right: -5vw;
-            font-size: clamp(80px, 12vw, 200px);
-            font-weight: 900;
-            line-height: 0.85;
-            letter-spacing: -0.03em;
-            color: transparent;
-            -webkit-text-stroke: 0.5px rgba(242, 242, 242, 0.08);
-            font-family: 'Space Mono', monospace;
-            white-space: nowrap;
-            pointer-events: none;
-            user-select: none;
-        }
-
-        /* ---- 3D AERO VISUALIZER ---- */
-        .aero-visualizer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-        }
-
-        #aero-canvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
-        /* ---- HERO OVERLAY CONTENT ---- */
-        .hero-overlay {
-            position: relative;
-            z-index: 10;
-            padding: 0 60px 60px;
-        }
-
-        .hero-tag {
-            font-size: 9px;
-            letter-spacing: 6px;
-            text-transform: uppercase;
-            color: var(--telemetry-red);
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .hero-tag::before {
-            content: '';
-            width: 40px;
-            height: 0.5px;
-            background: var(--telemetry-red);
-        }
-
-        .hero-title {
-            font-size: clamp(36px, 5vw, 72px);
-            font-weight: 700;
-            line-height: 1.05;
-            letter-spacing: -0.03em;
-            margin-bottom: 24px;
-            max-width: 600px;
-        }
-
-        .hero-title span {
-            color: var(--telemetry-red);
-        }
-
-        .hero-subtitle {
-            font-size: 11px;
-            letter-spacing: 2px;
-            line-height: 1.8;
-            color: rgba(242, 242, 242, 0.4);
-            max-width: 420px;
-            text-transform: uppercase;
-        }
-
-        /* ---- TECHNICAL HAIRLINES ---- */
-        .hairline-h {
-            width: 100%;
-            height: 0.5px;
-            background: var(--hairline);
-        }
-
-        .hairline-v {
-            width: 0.5px;
-            height: 100%;
-            background: var(--hairline);
-        }
-
-        /* ---- SPEED ANNOTATION LINES ---- */
-        .speed-lines {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 5;
-        }
-
-        .speed-lines svg {
-            width: 100%;
-            height: 100%;
-        }
-
-        /* ============================================
-           TELEMETRY MODULES SECTION
-           ============================================ */
-        .telemetry-section {
-            padding: 80px 60px;
-            position: relative;
-        }
-
-        .section-header {
-            display: flex;
-            align-items: baseline;
-            gap: 24px;
-            margin-bottom: 48px;
-        }
-
-        .section-number {
-            font-size: 72px;
-            font-weight: 700;
-            color: rgba(242, 242, 242, 0.06);
-            line-height: 1;
-            font-family: 'Space Mono', monospace;
-        }
-
-        .section-title {
-            font-size: 9px;
-            letter-spacing: 6px;
-            text-transform: uppercase;
-            color: var(--telemetry-red);
-        }
-
-        .section-line {
-            flex: 1;
-            height: 0.5px;
-            background: var(--hairline);
-        }
-
-        /* ---- GLASSMORPHIC TELEMETRY CARDS ---- */
-        .telemetry-grid {
-            display: grid;
-            grid-template-columns: repeat(12, 1fr);
-            gap: 16px;
-            margin-bottom: 48px;
-        }
-
-        .telem-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 0.5px solid var(--glass-border);
-            border-radius: 2px;
-            padding: 24px;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .telem-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255, 0, 50, 0.3), transparent);
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-
-        .telem-card:hover::before {
-            opacity: 1;
-        }
-
-        .telem-card:hover {
-            border-color: rgba(255, 0, 50, 0.15);
-            transform: translateY(-2px);
-        }
-
-        .telem-card.span-4 { grid-column: span 4; }
-        .telem-card.span-3 { grid-column: span 3; }
-        .telem-card.span-5 { grid-column: span 5; }
-        .telem-card.span-6 { grid-column: span 6; }
-        .telem-card.span-7 { grid-column: span 7; }
-        .telem-card.span-8 { grid-column: span 8; }
-        .telem-card.span-12 { grid-column: span 12; }
-
-        /* Asymmetric gutter-spanning: intentional grid break */
-        .telem-card.offset-1 { grid-column-start: 2; }
-        .telem-card.offset-2 { grid-column-start: 3; }
-
-        .telem-label {
-            font-size: 8px;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            color: rgba(242, 242, 242, 0.3);
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .telem-label .dot {
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
-            background: var(--telemetry-red);
-            animation: pulse-dot 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse-dot {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-
-        .telem-value {
-            font-size: 48px;
-            font-weight: 700;
-            line-height: 1;
-            letter-spacing: -0.02em;
-            font-family: 'Space Mono', monospace;
-            margin-bottom: 4px;
-        }
-
-        .telem-value .unit {
-            font-size: 14px;
-            font-weight: 400;
-            color: rgba(242, 242, 242, 0.3);
-            margin-left: 4px;
-            letter-spacing: 2px;
-        }
-
-        .telem-value.red { color: var(--telemetry-red); }
-
-        .telem-delta {
-            font-size: 10px;
-            color: rgba(242, 242, 242, 0.25);
-            letter-spacing: 1px;
-        }
-
-        .telem-delta.positive { color: #00FF88; }
-        .telem-delta.negative { color: var(--telemetry-red); }
-
-        /* ---- MINI CHART IN CARDS ---- */
-        .telem-chart {
-            margin-top: 16px;
-            height: 48px;
-            position: relative;
-        }
-
-        .telem-chart canvas {
-            width: 100%;
-            height: 100%;
-        }
-
-        /* ============================================
-           RACE PROGRESS SCRUBBER
-           ============================================ */
-        .race-progress-section {
-            padding: 40px 60px 80px;
-        }
-
-        .race-scrubber {
-            position: relative;
-            height: 80px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .scrubber-labels {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 12px;
-        }
-
-        .scrubber-label {
-            font-size: 8px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: rgba(242, 242, 242, 0.25);
-        }
-
-        .scrubber-label span {
-            color: var(--alumina);
-            font-weight: 700;
-        }
-
-        .scrubber-track {
-            position: relative;
-            height: 24px;
-            cursor: pointer;
-        }
-
-        .scrubber-bg {
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: var(--hairline);
-            transform: translateY(-50%);
-        }
-
-        .scrubber-fill {
-            position: absolute;
-            top: 50%;
-            left: 0;
-            height: 3px;
-            background: var(--telemetry-red);
-            transform: translateY(-50%);
-            transition: width 0.1s linear;
-            border-radius: 1px;
-        }
-
-        .scrubber-variable-stroke {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        .scrubber-variable-stroke svg {
-            width: 100%;
-            height: 100%;
-        }
-
-        .scrubber-head {
-            position: absolute;
-            top: 50%;
-            width: 12px;
-            height: 12px;
-            background: var(--telemetry-red);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: left 0.1s linear;
-            box-shadow: 0 0 20px rgba(255, 0, 50, 0.4);
-        }
-
-        .scrubber-head::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 24px;
-            height: 24px;
-            border: 0.5px solid rgba(255, 0, 50, 0.3);
-            border-radius: 50%;
-        }
-
-        .scrubber-markers {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 8px;
-        }
-
-        .scrubber-marker {
-            font-size: 9px;
-            color: rgba(242, 242, 242, 0.15);
-            font-family: 'Space Mono', monospace;
-        }
-
-        .scrubber-marker.active {
-            color: var(--telemetry-red);
-        }
-
-        /* ============================================
-           CFD DATA SECTION
-           ============================================ */
-        .cfd-section {
-            padding: 80px 60px;
-            position: relative;
-        }
-
-        .cfd-grid {
-            display: grid;
-            grid-template-columns: repeat(12, 1fr);
-            gap: 16px;
-        }
-
-        .cfd-visual {
-            grid-column: span 8;
-            position: relative;
-            height: 500px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(24px);
-            border: 0.5px solid var(--glass-border);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .cfd-visual canvas {
-            width: 100%;
-            height: 100%;
-        }
-
-        .cfd-sidebar {
-            grid-column: span 4;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .cfd-stat {
-            background: var(--glass-bg);
-            backdrop-filter: blur(24px);
-            border: 0.5px solid var(--glass-border);
-            border-radius: 2px;
-            padding: 20px;
-        }
-
-        .cfd-stat-label {
-            font-size: 8px;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            color: rgba(242, 242, 242, 0.3);
-            margin-bottom: 8px;
-        }
-
-        .cfd-stat-value {
-            font-size: 32px;
-            font-weight: 700;
-            font-family: 'Space Mono', monospace;
-            line-height: 1;
-        }
-
-        .cfd-stat-bar {
-            margin-top: 12px;
-            height: 2px;
-            background: rgba(242, 242, 242, 0.05);
-            border-radius: 1px;
-            overflow: hidden;
-        }
-
-        .cfd-stat-bar-fill {
-            height: 100%;
-            background: var(--telemetry-red);
-            border-radius: 1px;
-            transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        /* ============================================
-           ENGINEERING LOG / FOOTER
-           ============================================ */
-        .eng-log {
-            padding: 40px 60px 60px;
-            border-top: 0.5px solid var(--hairline);
-        }
-
-        .log-entries {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .log-entry {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 8px 0;
-            font-size: 10px;
-            color: rgba(242, 242, 242, 0.25);
-            font-family: 'Space Mono', monospace;
-            border-bottom: 0.5px solid rgba(242, 242, 242, 0.03);
-        }
-
-        .log-time {
-            color: rgba(242, 242, 242, 0.15);
-            min-width: 100px;
-        }
-
-        .log-type {
-            font-size: 7px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            padding: 2px 8px;
-            border: 0.5px solid;
-            border-radius: 1px;
-            min-width: 60px;
-            text-align: center;
-        }
-
-        .log-type.info { border-color: rgba(242, 242, 242, 0.1); color: rgba(242, 242, 242, 0.3); }
-        .log-type.warn { border-color: rgba(255, 200, 0, 0.2); color: rgba(255, 200, 0, 0.5); }
-        .log-type.crit { border-color: rgba(255, 0, 50, 0.3); color: var(--telemetry-red); }
-
-        .log-msg {
-            flex: 1;
-        }
-
-        /* ============================================
-           FLOATING TECHNICAL ANNOTATIONS
-           ============================================ */
-        .tech-annotation {
-            position: absolute;
-            font-size: 8px;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            color: rgba(242, 242, 242, 0.12);
-            pointer-events: none;
-            z-index: 50;
-        }
-
-        .tech-annotation.with-line::before {
-            content: '';
-            display: inline-block;
-            width: 30px;
-            height: 0.5px;
-            background: rgba(242, 242, 242, 0.08);
-            vertical-align: middle;
-            margin-right: 8px;
-        }
-
-        /* ============================================
-           VIBRATION / RPM ANIMATION
-           ============================================ */
-        @keyframes vibrate {
-            0% { transform: translate(0, 0); }
-            25% { transform: translate(0.3px, -0.3px); }
-            50% { transform: translate(-0.3px, 0.3px); }
-            75% { transform: translate(0.3px, 0.3px); }
-            100% { transform: translate(0, 0); }
-        }
-
-        .vibrate {
-            animation: vibrate 0.05s linear infinite;
-        }
-
-        @keyframes rpm-glow {
-            0%, 100% { box-shadow: 0 0 30px rgba(255, 0, 50, 0.1); }
-            50% { box-shadow: 0 0 60px rgba(255, 0, 50, 0.2); }
-        }
-
-        /* ---- LOADING SCREEN ---- */
-        .loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--obsidian);
-            z-index: 100000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 0.8s ease, visibility 0.8s ease;
-        }
-
-        .loading-screen.hidden {
-            opacity: 0;
-            visibility: hidden;
-        }
-
-        .loading-text {
-            font-size: 9px;
-            letter-spacing: 8px;
-            text-transform: uppercase;
-            color: rgba(242, 242, 242, 0.3);
-            margin-bottom: 32px;
-        }
+        .nav-links { display: flex; align-items: center; gap: 40px; }
 
-        .loading-bar {
-            width: 200px;
-            height: 1px;
-            background: rgba(242, 242, 242, 0.05);
-            position: relative;
-            overflow: hidden;
+        .nav-link {
+            font-size: 13px; font-weight: 500; letter-spacing: 0.02em;
+            color: var(--dark-gray); transition: color 0.3s ease;
+            cursor: pointer; position: relative;
         }
 
-        .loading-bar-fill {
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            background: var(--telemetry-red);
-            width: 0%;
+        .nav-link::after {
+            content: ''; position: absolute; bottom: -4px; left: 0;
+            width: 0; height: 1px; background: var(--black);
             transition: width 0.3s ease;
         }
 
-        .loading-percent {
-            font-size: 48px;
-            font-weight: 700;
-            font-family: 'Space Mono', monospace;
-            color: var(--alumina);
-            margin-top: 24px;
-            letter-spacing: -2px;
+        .nav-link:hover { color: var(--black); }
+        .nav-link:hover::after { width: 100%; }
+
+        .nav-index {
+            font-size: 10px; color: var(--mid-gray);
+            margin-right: 4px; font-weight: 400;
+            font-variant-numeric: tabular-nums;
         }
 
-        /* ---- CURSOR FOLLOWER ---- */
-        .cursor-follower {
-            position: fixed;
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(255, 0, 50, 0.03) 0%, transparent 70%);
-            pointer-events: none;
-            z-index: 9990;
-            transform: translate(-50%, -50%);
-            transition: left 0.6s cubic-bezier(0.16, 1, 0.3, 1), top 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        /* HERO */
+        .hero {
+            padding-top: 180px; padding-bottom: 120px;
+            position: relative; overflow: hidden;
         }
 
-        /* ---- RESPONSIVE ---- */
+        .hero-grid {
+            display: grid; grid-template-columns: repeat(12, 1fr);
+            gap: var(--grid-gap); align-items: end;
+        }
+
+        .hero-content { grid-column: 1 / 9; }
+        .hero-meta { grid-column: 10 / 13; padding-bottom: 12px; }
+
+        .hero-tag {
+            font-size: 11px; font-weight: 500;
+            letter-spacing: 0.15em; text-transform: uppercase;
+            color: var(--dark-gray); margin-bottom: 32px;
+            display: flex; align-items: center; gap: 16px;
+        }
+
+        .hero-tag-line { width: 40px; height: 1px; background: var(--mid-gray); }
+
+        .hero-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(56px, 7.5vw, 120px);
+            font-weight: 700; line-height: 0.95;
+            letter-spacing: -0.04em; color: var(--black);
+            margin-bottom: 40px;
+        }
+
+        .hero-title-outline {
+            -webkit-text-stroke: 1.5px var(--black);
+            color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 17px; font-weight: 400; line-height: 1.7;
+            color: var(--dark-gray); max-width: 520px;
+        }
+
+        .hero-meta-label {
+            font-size: 10px; font-weight: 500;
+            letter-spacing: 0.15em; text-transform: uppercase;
+            color: var(--mid-gray); margin-bottom: 8px;
+        }
+
+        .hero-meta-value {
+            font-size: 14px; font-weight: 400;
+            color: var(--charcoal); margin-bottom: 24px; line-height: 1.5;
+        }
+
+        .hero-bg-number {
+            position: absolute; top: 100px; right: -40px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(200px, 30vw, 500px);
+            font-weight: 700; line-height: 1; color: var(--off-white);
+            pointer-events: none; user-select: none; z-index: -1;
+        }
+
+        .divider { width: 100%; height: 1px; background: var(--light-gray); }
+
+        /* SECTION HEADERS */
+        .section-header {
+            display: flex; align-items: baseline;
+            gap: 20px; margin-bottom: 64px;
+        }
+
+        .section-number {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 13px; font-weight: 500;
+            color: var(--mid-gray); font-variant-numeric: tabular-nums;
+        }
+
+        .section-title {
+            font-size: 11px; font-weight: 600;
+            letter-spacing: 0.15em; text-transform: uppercase;
+            color: var(--black);
+        }
+
+        .section-line { flex: 1; height: 1px; background: var(--light-gray); }
+
+        /* ABOUT */
+        .about { padding: 120px 0; }
+
+        .about-grid {
+            display: grid; grid-template-columns: repeat(12, 1fr);
+            gap: var(--grid-gap);
+        }
+
+        .about-text { grid-column: 1 / 7; }
+
+        .about-text p {
+            font-size: 20px; font-weight: 300; line-height: 1.8;
+            color: var(--charcoal); margin-bottom: 24px;
+        }
+
+        .about-text p strong { font-weight: 600; color: var(--black); }
+
+        .about-stats {
+            grid-column: 8 / 13;
+            display: flex; flex-direction: column; gap: 40px; padding-top: 8px;
+        }
+
+        .stat-item { border-top: 1px solid var(--light-gray); padding-top: 20px; }
+
+        .stat-number {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 48px; font-weight: 700;
+            letter-spacing: -0.03em; color: var(--black);
+            line-height: 1; margin-bottom: 8px;
+        }
+
+        .stat-label { font-size: 13px; color: var(--dark-gray); font-weight: 400; }
+
+        /* WORK */
+        .work { padding: 120px 0; background: var(--off-white); }
+        .project-list { display: flex; flex-direction: column; }
+
+        .project-item {
+            display: grid; grid-template-columns: repeat(12, 1fr);
+            gap: var(--grid-gap); padding: 48px 0;
+            border-bottom: 1px solid var(--mid-gray);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+        }
+
+        .project-item:first-child { border-top: 1px solid var(--mid-gray); }
+        .project-item:hover { padding-left: 16px; }
+        .project-item:hover .project-title { letter-spacing: -0.02em; }
+        .project-item:hover .project-arrow { transform: translate(4px, -4px); opacity: 1; }
+
+        .project-number {
+            grid-column: 1 / 2;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 14px; font-weight: 500; color: var(--mid-gray);
+            padding-top: 8px; font-variant-numeric: tabular-nums;
+        }
+
+        .project-info { grid-column: 2 / 8; }
+
+        .project-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(28px, 3.5vw, 48px);
+            font-weight: 600; letter-spacing: -0.03em;
+            line-height: 1.1; margin-bottom: 12px;
+            transition: letter-spacing 0.4s ease;
+        }
+
+        .project-description {
+            font-size: 15px; color: var(--dark-gray);
+            line-height: 1.6; max-width: 400px;
+        }
+
+        .project-meta-col {
+            grid-column: 8 / 11;
+            display: flex; flex-direction: column; gap: 16px; padding-top: 8px;
+        }
+
+        .project-tag {
+            font-size: 11px; font-weight: 500;
+            letter-spacing: 0.1em; text-transform: uppercase;
+            color: var(--dark-gray);
+        }
+
+        .project-year {
+            font-size: 14px; color: var(--mid-gray);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .project-arrow-col {
+            grid-column: 12 / 13;
+            display: flex; align-items: flex-start;
+            justify-content: flex-end; padding-top: 8px;
+        }
+
+        .project-arrow {
+            font-size: 20px; opacity: 0.3;
+            transition: all 0.3s ease;
+        }
+
+        .project-image-container {
+            position: fixed; width: 320px; height: 200px;
+            pointer-events: none; z-index: 900;
+            opacity: 0; transform: translateY(10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            border-radius: 4px; overflow: hidden; background: var(--light-gray);
+        }
+
+        /* SERVICES */
+        .services { padding: 120px 0; }
+
+        .services-grid {
+            display: grid; grid-template-columns: repeat(12, 1fr);
+            gap: var(--grid-gap);
+        }
+
+        .service-card {
+            grid-column: span 4;
+            padding: 40px 0; border-top: 1px solid var(--light-gray);
+        }
+
+        .service-icon { font-size: 32px; margin-bottom: 24px; display: block; }
+
+        .service-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 22px; font-weight: 600;
+            letter-spacing: -0.02em; margin-bottom: 16px; color: var(--black);
+        }
+
+        .service-desc { font-size: 15px; line-height: 1.7; color: var(--dark-gray); }
+
+        .service-list { margin-top: 24px; list-style: none; }
+
+        .service-list li {
+            font-size: 13px; color: var(--charcoal);
+            padding: 6px 0; border-bottom: 1px solid var(--light-gray);
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .service-list li::before {
+            content: ''; width: 4px; height: 4px;
+            background: var(--black); border-radius: 50%; flex-shrink: 0;
+        }
+
+        /* TESTIMONIALS */
+        .testimonials { padding: 120px 0; background: var(--black); color: var(--white); }
+        .testimonials .section-number { color: rgba(255,255,255,0.3); }
+        .testimonials .section-title { color: var(--white); }
+        .testimonials .section-line { background: rgba(255,255,255,0.1); }
+
+        .testimonial-grid {
+            display: grid; grid-template-columns: repeat(12, 1fr);
+            gap: var(--grid-gap);
+        }
+
+        .testimonial-quote { grid-column: 1 / 9; }
+
+        .testimonial-text {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(24px, 3vw, 40px);
+            font-weight: 300; line-height: 1.4;
+            letter-spacing: -0.02em;
+            color: rgba(255,255,255,0.9); margin-bottom: 40px;
+        }
+
+        .testimonial-author { font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.6); }
+        .testimonial-role { font-size: 13px; color: rgba(255,255,255,0.3); margin-top: 4px; }
+
+        .testimonial-meta {
+            grid-column: 10 / 13;
+            display: flex; flex-direction: column;
+            justify-content: flex-end; gap: 24px;
+        }
+
+        .testimonial-stat { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 16px; }
+
+        .testimonial-stat-number {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 36px; font-weight: 700; letter-spacing: -0.02em;
+        }
+
+        .testimonial-stat-label { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 4px; }
+
+        /* CONTACT */
+        .contact { padding: 120px 0; }
+
+        .contact-grid {
+            display: grid; grid-template-columns: repeat(12, 1fr);
+            gap: var(--grid-gap);
+        }
+
+        .contact-heading { grid-column: 1 / 8; }
+
+        .contact-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(40px, 5.5vw, 80px);
+            font-weight: 700; letter-spacing: -0.04em;
+            line-height: 1; margin-bottom: 24px;
+        }
+
+        .contact-subtitle { font-size: 17px; color: var(--dark-gray); line-height: 1.7; max-width: 480px; }
+
+        .contact-info {
+            grid-column: 9 / 13;
+            display: flex; flex-direction: column; gap: 32px; padding-top: 16px;
+        }
+
+        .contact-block { border-top: 1px solid var(--light-gray); padding-top: 16px; }
+
+        .contact-label {
+            font-size: 10px; font-weight: 600;
+            letter-spacing: 0.15em; text-transform: uppercase;
+            color: var(--mid-gray); margin-bottom: 8px;
+        }
+
+        .contact-value { font-size: 16px; color: var(--black); font-weight: 400; }
+        .contact-value:hover { text-decoration: underline; }
+
+        /* FOOTER */
+        .footer { padding: 40px 0; border-top: 1px solid var(--light-gray); }
+        .footer-inner { display: flex; justify-content: space-between; align-items: center; }
+        .footer-left { font-size: 13px; color: var(--dark-gray); }
+        .footer-right { display: flex; gap: 32px; }
+        .footer-link { font-size: 13px; color: var(--dark-gray); transition: color 0.3s ease; }
+        .footer-link:hover { color: var(--black); }
+
+        /* MARQUEE */
+        .marquee-section {
+            padding: 48px 0; overflow: hidden;
+            border-top: 1px solid var(--light-gray);
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        .marquee-track {
+            display: flex; gap: 80px;
+            animation: marquee 30s linear infinite;
+            white-space: nowrap;
+        }
+
+        .marquee-item {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(36px, 5vw, 72px);
+            font-weight: 700; letter-spacing: -0.03em;
+            color: var(--light-gray); flex-shrink: 0;
+            transition: color 0.3s ease;
+        }
+
+        .marquee-item:hover { color: var(--black); }
+
+        .marquee-separator {
+            font-size: clamp(36px, 5vw, 72px);
+            color: var(--mid-gray); flex-shrink: 0; font-weight: 300;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* SCROLL REVEAL */
+        .reveal {
+            opacity: 0; transform: translateY(30px);
+            transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1),
+                        transform 0.8s cubic-bezier(0.16,1,0.3,1);
+        }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+
+        /* RESPONSIVE */
         @media (max-width: 1024px) {
-            .telem-card.span-4,
-            .telem-card.span-3,
-            .telem-card.span-5 {
-                grid-column: span 6;
-            }
-            .telem-card.offset-1,
-            .telem-card.offset-2 {
-                grid-column-start: auto;
-            }
-            .cfd-visual { grid-column: span 12; height: 350px; }
-            .cfd-sidebar { grid-column: span 12; flex-direction: row; flex-wrap: wrap; }
-            .cfd-stat { flex: 1; min-width: 200px; }
+            .grid-container { padding: 0 40px; }
+            .nav-inner { padding: 0 40px; }
+            .hero-content { grid-column: 1 / 10; }
+            .hero-meta { grid-column: 1 / 13; margin-top: 48px; display: flex; gap: 48px; }
+            .about-text { grid-column: 1 / 8; }
+            .about-stats { grid-column: 8 / 13; }
+            .service-card { grid-column: span 6; }
+            .project-info { grid-column: 2 / 9; }
+            .project-meta-col { grid-column: 9 / 12; }
+            .testimonial-quote { grid-column: 1 / 10; }
+            .testimonial-meta { grid-column: 10 / 13; }
+            .contact-heading { grid-column: 1 / 9; }
+            .contact-info { grid-column: 9 / 13; }
         }
 
         @media (max-width: 768px) {
-            .sidebar { width: 60px; }
-            .main-content { margin-left: 60px; }
-            .hero-overlay,
-            .telemetry-section,
-            .race-progress-section,
-            .cfd-section,
-            .eng-log { padding-left: 24px; padding-right: 24px; }
-            .telem-card.span-4,
-            .telem-card.span-3,
-            .telem-card.span-5,
-            .telem-card.span-6,
-            .telem-card.span-7,
-            .telem-card.span-8 {
-                grid-column: span 12;
-            }
-            .nav-numeral { font-size: 20px; }
+            .grid-container { padding: 0 24px; }
+            .nav-inner { padding: 0 24px; }
+            .nav-links { gap: 24px; }
+            .hero { padding-top: 140px; padding-bottom: 80px; }
+            .hero-content { grid-column: 1 / 13; }
+            .hero-meta { flex-direction: column; gap: 24px; }
+            .about-text { grid-column: 1 / 13; }
+            .about-stats { grid-column: 1 / 13; flex-direction: row; flex-wrap: wrap; }
+            .stat-item { flex: 1; min-width: 140px; }
+            .service-card { grid-column: span 12; }
+            .project-item { grid-template-columns: 1fr; gap: 12px; }
+            .project-number, .project-info, .project-meta-col { grid-column: auto; }
+            .project-meta-col { flex-direction: row; gap: 24px; }
+            .project-arrow-col { display: none; }
+            .testimonial-quote { grid-column: 1 / 13; }
+            .testimonial-meta { grid-column: 1 / 13; flex-direction: row; flex-wrap: wrap; margin-top: 40px; }
+            .testimonial-stat { flex: 1; min-width: 120px; }
+            .contact-heading { grid-column: 1 / 13; }
+            .contact-info { grid-column: 1 / 13; margin-top: 48px; }
+            .about, .work, .services, .testimonials, .contact { padding: 80px 0; }
+        }
+
+        @media (max-width: 480px) {
+            .nav-links .nav-link:nth-child(n+4) { display: none; }
+            .hero-title { font-size: 44px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- LOADING SCREEN -->
-    <div class="loading-screen" id="loadingScreen">
-        <div class="loading-text">Initializing Skunkworks</div>
-        <div class="loading-bar"><div class="loading-bar-fill" id="loadingFill"></div></div>
-        <div class="loading-percent" id="loadingPercent">00</div>
-    </div>
-
-    <!-- FILM GRAIN -->
-    <div class="film-grain"><canvas id="grainCanvas"></canvas></div>
-
-    <!-- CHROMATIC ABERRATION -->
-    <div class="chromatic-aberration"></div>
-
-    <!-- SCANLINES -->
-    <div class="scanlines"></div>
-
-    <!-- CURSOR FOLLOWER -->
-    <div class="cursor-follower" id="cursorFollower"></div>
-
-    <!-- ============================================
-         BRUTALIST SIDEBAR
-         ============================================ -->
-    <nav class="sidebar">
-        <div class="sidebar-logo"></div>
-        <div class="sidebar-nav">
-            <div class="nav-item active" data-section="hero">
-                <span class="nav-numeral">01</span>
-                <span class="nav-label">Aero</span>
-            </div>
-            <div class="nav-item" data-section="telemetry">
-                <span class="nav-numeral">02</span>
-                <span class="nav-label">Telem</span>
-            </div>
-            <div class="nav-item" data-section="race">
-                <span class="nav-numeral">03</span>
-                <span class="nav-label">Race</span>
-            </div>
-            <div class="nav-item" data-section="cfd">
-                <span class="nav-numeral">04</span>
-                <span class="nav-label">CFD</span>
-            </div>
-            <div class="nav-item" data-section="log">
-                <span class="nav-numeral">05</span>
-                <span class="nav-label">Log</span>
+    <nav class="nav">
+        <div class="nav-inner">
+            <a href="#" class="nav-logo">Portfolio.</a>
+            <div class="nav-links">
+                <a class="nav-link" href="#about"><span class="nav-index">01</span> About</a>
+                <a class="nav-link" href="#work"><span class="nav-index">02</span> Work</a>
+                <a class="nav-link" href="#services"><span class="nav-index">03</span> Services</a>
+                <a class="nav-link" href="#contact"><span class="nav-index">04</span> Contact</a>
             </div>
         </div>
-        <div class="sidebar-status">SKUNKWORKS // DIVISION 7</div>
     </nav>
 
-    <!-- ============================================
-         MAIN CONTENT
-         ============================================ -->
-    <main class="main-content">
-
-        <!-- ---- HERO / AERO-VISUALIZER ---- -->
-        <section class="hero-section" id="hero">
-            <div class="ink-trap-title" id="inkTrapTitle">AERO</div>
-            <div class="ink-trap-secondary">DYNAMICS</div>
-
-            <!-- 3D Aero Visualizer Canvas -->
-            <div class="aero-visualizer">
-                <canvas id="aero-canvas"></canvas>
-            </div>
-
-            <!-- Speed-Line Annotations -->
-            <div class="speed-lines" id="speedLines">
-                <svg viewBox="0 0 1920 1080" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-                    <!-- Dynamic speed lines injected by JS -->
-                </svg>
-            </div>
-
-            <!-- Technical annotations -->
-            <div class="tech-annotation with-line" style="top: 20%; right: 8%;">Downforce Vector 3.2G</div>
-            <div class="tech-annotation with-line" style="top: 35%; right: 12%;">Laminar Flow Region</div>
-            <div class="tech-annotation with-line" style="top: 55%; left: 15%;">Pressure Coefficient Cp -2.4</div>
-            <div class="tech-annotation" style="bottom: 35%; right: 20%; color: rgba(255, 0, 50, 0.15);">DRS Zone Active</div>
-
-            <!-- Hero Overlay -->
-            <div class="hero-overlay">
-                <div class="hero-tag">Skunkworks Aero Division</div>
-                <h1 class="hero-title">Computational<br>Fluid <span>Dynamics</span></h1>
-                <p class="hero-subtitle">Real-time aerodynamic simulation engine. 18,000 RPM telemetry feed. Carbon-fiber chassis wind-tunnel data at 340 km/h equivalent airspeed.</p>
-            </div>
-        </section>
-
-        <div class="hairline-h"></div>
-
-        <!-- ---- TELEMETRY MODULES ---- -->
-        <section class="telemetry-section" id="telemetry">
-            <div class="section-header">
-                <div class="section-number">02</div>
-                <div class="section-title">Live Telemetry Feed</div>
-                <div class="section-line"></div>
-            </div>
-
-            <div class="telemetry-grid">
-                <!-- Row 1: Asymmetric layout -->
-                <div class="telem-card span-3">
-                    <div class="telem-label"><span class="dot"></span>Engine RPM</div>
-                    <div class="telem-value" id="rpmValue">18,247</div>
-                    <div class="telem-delta positive">+320 RPM</div>
-                    <div class="telem-chart"><canvas id="rpmChart"></canvas></div>
-                </div>
-
-                <div class="telem-card span-5">
-                    <div class="telem-label"><span class="dot"></span>Speed</div>
-                    <div class="telem-value red" id="speedValue">342<span class="unit">KM/H</span></div>
-                    <div class="telem-delta positive">+12.4 vs S2</div>
-                    <div class="telem-chart"><canvas id="speedChart"></canvas></div>
-                </div>
-
-                <div class="telem-card span-4">
-                    <div class="telem-label"><span class="dot"></span>Downforce</div>
-                    <div class="telem-value" id="dfValue">1,847<span class="unit">KG</span></div>
-                    <div class="telem-delta negative">-23 KG</div>
-                    <div class="telem-chart"><canvas id="dfChart"></canvas></div>
-                </div>
-
-                <!-- Row 2: Offset for asymmetric gutter-spanning -->
-                <div class="telem-card span-4 offset-1">
-                    <div class="telem-label"><span class="dot"></span>Tire Temp FL</div>
-                    <div class="telem-value" id="tireTempValue">104.2<span class="unit">&deg;C</span></div>
-                    <div class="telem-delta">Optimal Range</div>
-                </div>
-
-                <div class="telem-card span-3">
-                    <div class="telem-label"><span class="dot"></span>Brake Temp</div>
-                    <div class="telem-value" id="brakeTempValue">847<span class="unit">&deg;C</span></div>
-                    <div class="telem-delta negative">Critical +12%</div>
-                </div>
-
-                <div class="telem-card span-3">
-                    <div class="telem-label"><span class="dot"></span>ERS Deploy</div>
-                    <div class="telem-value red" id="ersValue">78<span class="unit">%</span></div>
-                    <div class="telem-delta positive">Harvesting</div>
-                </div>
-
-                <!-- Row 3: Full-width DRS module -->
-                <div class="telem-card span-8" style="animation: rpm-glow 3s ease-in-out infinite;">
-                    <div class="telem-label"><span class="dot"></span>DRS Status // Rear Wing Configuration</div>
-                    <div style="display: flex; align-items: baseline; gap: 32px;">
-                        <div class="telem-value red">OPEN</div>
-                        <div style="font-size: 11px; color: rgba(242,242,242,0.3); letter-spacing: 2px;">WING ANGLE: 6.2&deg; // DRAG REDUCTION: 23.4%</div>
+    <section class="hero" id="hero">
+        <div class="hero-bg-number" aria-hidden="true">01</div>
+        <div class="grid-container">
+            <div class="hero-grid">
+                <div class="hero-content">
+                    <div class="hero-tag">
+                        <span class="hero-tag-line"></span>
+                        Designer &amp; Developer
                     </div>
-                    <div class="telem-chart" style="height: 64px;"><canvas id="drsChart"></canvas></div>
+                    <h1 class="hero-title">
+                        Creating<br>
+                        <span class="hero-title-outline">digital</span><br>
+                        experiences.
+                    </h1>
+                    <p class="hero-subtitle">
+                        I design and build clean, purposeful digital products. Focused on typography, whitespace, and the details that make interfaces feel right.
+                    </p>
                 </div>
-
-                <div class="telem-card span-4">
-                    <div class="telem-label"><span class="dot"></span>Fuel Load</div>
-                    <div class="telem-value" id="fuelValue">34.7<span class="unit">KG</span></div>
-                    <div class="telem-delta">Lap 42 / 57</div>
-                    <div class="telem-chart"><canvas id="fuelChart"></canvas></div>
-                </div>
-            </div>
-        </section>
-
-        <div class="hairline-h"></div>
-
-        <!-- ---- RACE PROGRESS SCRUBBER ---- -->
-        <section class="race-progress-section" id="race">
-            <div class="section-header">
-                <div class="section-number">03</div>
-                <div class="section-title">Race Progress // Sector Analysis</div>
-                <div class="section-line"></div>
-            </div>
-
-            <div class="scrubber-labels">
-                <span class="scrubber-label">LAP <span id="currentLap">42</span> / 57</span>
-                <span class="scrubber-label">SECTOR <span>S3</span></span>
-                <span class="scrubber-label">GAP <span style="color: var(--telemetry-red);">+0.347</span></span>
-                <span class="scrubber-label">BEST <span>1:18.204</span></span>
-            </div>
-
-            <div class="race-scrubber" id="raceScrubber">
-                <div class="scrubber-track">
-                    <div class="scrubber-bg"></div>
-                    <div class="scrubber-variable-stroke">
-                        <svg id="scrubberSVG" viewBox="0 0 1000 24" preserveAspectRatio="none">
-                            <path id="scrubberPath" d="" fill="none" stroke="rgba(242,242,242,0.06)" stroke-width="1"/>
-                            <path id="scrubberPathActive" d="" fill="none" stroke="#FF0032" stroke-width="2"/>
-                        </svg>
+                <div class="hero-meta">
+                    <div class="hero-meta-block">
+                        <div class="hero-meta-label">Based in</div>
+                        <div class="hero-meta-value">San Francisco, CA</div>
                     </div>
-                    <div class="scrubber-fill" id="scrubberFill" style="width: 73.7%;"></div>
-                    <div class="scrubber-head" id="scrubberHead" style="left: 73.7%;"></div>
-                </div>
-            </div>
-
-            <div class="scrubber-markers" id="scrubberMarkers">
-                <!-- Generated by JS -->
-            </div>
-        </section>
-
-        <div class="hairline-h"></div>
-
-        <!-- ---- CFD DATA SECTION ---- -->
-        <section class="cfd-section" id="cfd">
-            <div class="section-header">
-                <div class="section-number">04</div>
-                <div class="section-title">CFD Simulation // Wind Tunnel Data</div>
-                <div class="section-line"></div>
-            </div>
-
-            <div class="cfd-grid">
-                <div class="cfd-visual">
-                    <canvas id="cfdCanvas"></canvas>
-                </div>
-
-                <div class="cfd-sidebar">
-                    <div class="cfd-stat">
-                        <div class="cfd-stat-label">Drag Coefficient</div>
-                        <div class="cfd-stat-value" id="cdValue">0.732</div>
-                        <div class="cfd-stat-bar"><div class="cfd-stat-bar-fill" style="width: 73.2%"></div></div>
+                    <div class="hero-meta-block">
+                        <div class="hero-meta-label">Availability</div>
+                        <div class="hero-meta-value">Open for projects</div>
                     </div>
-                    <div class="cfd-stat">
-                        <div class="cfd-stat-label">Lift Coefficient</div>
-                        <div class="cfd-stat-value" id="clValue">-3.42</div>
-                        <div class="cfd-stat-bar"><div class="cfd-stat-bar-fill" style="width: 85.5%"></div></div>
-                    </div>
-                    <div class="cfd-stat">
-                        <div class="cfd-stat-label">Reynolds Number</div>
-                        <div class="cfd-stat-value" style="font-size: 24px;" id="reValue">4.2 x 10<sup>6</sup></div>
-                        <div class="cfd-stat-bar"><div class="cfd-stat-bar-fill" style="width: 62%"></div></div>
-                    </div>
-                    <div class="cfd-stat">
-                        <div class="cfd-stat-label">Pressure Recovery</div>
-                        <div class="cfd-stat-value" id="prValue">87.3<span style="font-size:14px; opacity:0.4;">%</span></div>
-                        <div class="cfd-stat-bar"><div class="cfd-stat-bar-fill" style="width: 87.3%"></div></div>
-                    </div>
-                    <div class="cfd-stat">
-                        <div class="cfd-stat-label">Boundary Layer &delta;</div>
-                        <div class="cfd-stat-value" style="font-size: 24px;" id="blValue">12.4 <span style="font-size:12px; opacity:0.4;">mm</span></div>
-                        <div class="cfd-stat-bar"><div class="cfd-stat-bar-fill" style="width: 41.3%"></div></div>
+                    <div class="hero-meta-block">
+                        <div class="hero-meta-label">Specializing in</div>
+                        <div class="hero-meta-value">UI/UX Design<br>Frontend Development</div>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <div class="hairline-h"></div>
+    <div class="marquee-section">
+        <div class="marquee-track" id="marquee">
+            <span class="marquee-item">Branding</span>
+            <span class="marquee-separator">/</span>
+            <span class="marquee-item">Web Design</span>
+            <span class="marquee-separator">/</span>
+            <span class="marquee-item">Development</span>
+            <span class="marquee-separator">/</span>
+            <span class="marquee-item">UI/UX</span>
+            <span class="marquee-separator">/</span>
+            <span class="marquee-item">Typography</span>
+            <span class="marquee-separator">/</span>
+            <span class="marquee-item">Strategy</span>
+            <span class="marquee-separator">/</span>
+            <span class="marquee-item">Branding</span>
+            <span class="marquee-separator">/</span>
+            <span class="marquee-item">Web Design</span>
+            <span class="marquee-separator">/</span>
+            <span class="marquee-item">Development</span>
+            <span class="marquee-separator">/</span>
+            <span class="marquee-item">UI/UX</span>
+            <span class="marquee-separator">/</span>
+            <span class="marquee-item">Typography</span>
+            <span class="marquee-separator">/</span>
+            <span class="marquee-item">Strategy</span>
+            <span class="marquee-separator">/</span>
+        </div>
+    </div>
 
-        <!-- ---- ENGINEERING LOG ---- -->
-        <section class="eng-log" id="log">
-            <div class="section-header">
-                <div class="section-number">05</div>
-                <div class="section-title">Engineering Log // System Status</div>
-                <div class="section-line"></div>
+    <section class="about" id="about">
+        <div class="grid-container">
+            <div class="section-header reveal">
+                <span class="section-number">01</span>
+                <span class="section-title">About</span>
+                <span class="section-line"></span>
             </div>
-
-            <div class="log-entries" id="logEntries">
-                <div class="log-entry">
-                    <span class="log-time">14:32:07.442</span>
-                    <span class="log-type crit">CRIT</span>
-                    <span class="log-msg">Brake temp exceeded threshold T4_FL: 847&deg;C &gt; 800&deg;C limit</span>
+            <div class="about-grid">
+                <div class="about-text reveal">
+                    <p>I'm a designer and developer who believes in the power of <strong>restraint</strong>. Every element on the page should earn its place. I draw inspiration from the <strong>Swiss International Typographic Style</strong> &#8212; clean grids, purposeful typography, and clarity above all.</p>
+                    <p>With over a decade of experience crafting digital products, I partner with startups, agencies, and brands to create interfaces that are both <strong>beautiful and functional</strong>. My process is collaborative, detail-obsessed, and rooted in systematic design thinking.</p>
                 </div>
-                <div class="log-entry">
-                    <span class="log-time">14:32:06.118</span>
-                    <span class="log-type warn">WARN</span>
-                    <span class="log-msg">ERS battery charge below optimal: 78% &mdash; adjusting harvest strategy</span>
-                </div>
-                <div class="log-entry">
-                    <span class="log-time">14:32:05.901</span>
-                    <span class="log-type info">INFO</span>
-                    <span class="log-msg">DRS activation zone entered &mdash; rear wing angle reduced to 6.2&deg;</span>
-                </div>
-                <div class="log-entry">
-                    <span class="log-time">14:32:04.227</span>
-                    <span class="log-type info">INFO</span>
-                    <span class="log-msg">Sector 2 completed: 24.891s (+0.124 vs personal best)</span>
-                </div>
-                <div class="log-entry">
-                    <span class="log-time">14:32:03.005</span>
-                    <span class="log-type warn">WARN</span>
-                    <span class="log-msg">Wind tunnel correlation deviation: CFD model delta +2.3% at yaw angle 4&deg;</span>
-                </div>
-                <div class="log-entry">
-                    <span class="log-time">14:32:01.664</span>
-                    <span class="log-type info">INFO</span>
-                    <span class="log-msg">Fuel consumption rate: 1.72 kg/lap &mdash; target 1.68 kg/lap</span>
-                </div>
-                <div class="log-entry">
-                    <span class="log-time">14:31:59.887</span>
-                    <span class="log-type info">INFO</span>
-                    <span class="log-msg">Telemetry stream stable: 1000Hz sample rate, 0 dropped packets last 60s</span>
-                </div>
-                <div class="log-entry">
-                    <span class="log-time">14:31:58.230</span>
-                    <span class="log-type crit">CRIT</span>
-                    <span class="log-msg">Aero balance shift detected: front downforce -23kg &mdash; check front wing endplate</span>
+                <div class="about-stats">
+                    <div class="stat-item reveal reveal-delay-1">
+                        <div class="stat-number">10+</div>
+                        <div class="stat-label">Years of experience</div>
+                    </div>
+                    <div class="stat-item reveal reveal-delay-2">
+                        <div class="stat-number">80+</div>
+                        <div class="stat-label">Projects delivered</div>
+                    </div>
+                    <div class="stat-item reveal reveal-delay-3">
+                        <div class="stat-number">40+</div>
+                        <div class="stat-label">Happy clients</div>
+                    </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- ---- FOOTER ---- -->
-        <footer style="padding: 24px 60px; border-top: 0.5px solid var(--hairline); display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 8px; letter-spacing: 4px; text-transform: uppercase; color: rgba(242,242,242,0.15);">Skunkworks Division 7 // Classified</span>
-            <span style="font-size: 8px; letter-spacing: 4px; text-transform: uppercase; color: rgba(242,242,242,0.15);">Build 2026.02.25 // Rev. 7.4.1</span>
-        </footer>
+    <section class="work" id="work">
+        <div class="grid-container">
+            <div class="section-header reveal">
+                <span class="section-number">02</span>
+                <span class="section-title">Selected Work</span>
+                <span class="section-line"></span>
+            </div>
+            <div class="project-list">
+                <div class="project-item reveal">
+                    <div class="project-number">01</div>
+                    <div class="project-info">
+                        <h3 class="project-title">Volta Energy</h3>
+                        <p class="project-description">Brand identity and web platform for a renewable energy startup. Clean, data-driven design.</p>
+                    </div>
+                    <div class="project-meta-col">
+                        <span class="project-tag">Branding / Web</span>
+                        <span class="project-year">2025</span>
+                    </div>
+                    <div class="project-arrow-col"><span class="project-arrow">&#8599;</span></div>
+                </div>
+                <div class="project-item reveal reveal-delay-1">
+                    <div class="project-number">02</div>
+                    <div class="project-info">
+                        <h3 class="project-title">Arcadia Health</h3>
+                        <p class="project-description">Complete redesign of a healthcare dashboard. Focus on accessibility and information hierarchy.</p>
+                    </div>
+                    <div class="project-meta-col">
+                        <span class="project-tag">UI/UX / Development</span>
+                        <span class="project-year">2025</span>
+                    </div>
+                    <div class="project-arrow-col"><span class="project-arrow">&#8599;</span></div>
+                </div>
+                <div class="project-item reveal reveal-delay-2">
+                    <div class="project-number">03</div>
+                    <div class="project-info">
+                        <h3 class="project-title">Monolith Studio</h3>
+                        <p class="project-description">Portfolio website for an architecture studio. Grid-based layouts with large-scale imagery.</p>
+                    </div>
+                    <div class="project-meta-col">
+                        <span class="project-tag">Web Design</span>
+                        <span class="project-year">2024</span>
+                    </div>
+                    <div class="project-arrow-col"><span class="project-arrow">&#8599;</span></div>
+                </div>
+                <div class="project-item reveal reveal-delay-3">
+                    <div class="project-number">04</div>
+                    <div class="project-info">
+                        <h3 class="project-title">Forma Type Foundry</h3>
+                        <p class="project-description">E-commerce platform and specimen site for an independent type foundry. Typography-first approach.</p>
+                    </div>
+                    <div class="project-meta-col">
+                        <span class="project-tag">Branding / E-commerce</span>
+                        <span class="project-year">2024</span>
+                    </div>
+                    <div class="project-arrow-col"><span class="project-arrow">&#8599;</span></div>
+                </div>
+                <div class="project-item reveal reveal-delay-4">
+                    <div class="project-number">05</div>
+                    <div class="project-info">
+                        <h3 class="project-title">Lumen Analytics</h3>
+                        <p class="project-description">Data visualization platform for financial analytics. Complex data made clear and actionable.</p>
+                    </div>
+                    <div class="project-meta-col">
+                        <span class="project-tag">Dashboard / UI</span>
+                        <span class="project-year">2024</span>
+                    </div>
+                    <div class="project-arrow-col"><span class="project-arrow">&#8599;</span></div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    </main>
+    <section class="services" id="services">
+        <div class="grid-container">
+            <div class="section-header reveal">
+                <span class="section-number">03</span>
+                <span class="section-title">Services</span>
+                <span class="section-line"></span>
+            </div>
+            <div class="services-grid">
+                <div class="service-card reveal">
+                    <span class="service-icon">&#9633;</span>
+                    <h3 class="service-title">Design</h3>
+                    <p class="service-desc">Systematic visual design rooted in grid-based thinking and typographic precision.</p>
+                    <ul class="service-list">
+                        <li>UI/UX Design</li>
+                        <li>Brand Identity</li>
+                        <li>Design Systems</li>
+                        <li>Art Direction</li>
+                    </ul>
+                </div>
+                <div class="service-card reveal reveal-delay-1">
+                    <span class="service-icon">&#9671;</span>
+                    <h3 class="service-title">Development</h3>
+                    <p class="service-desc">Clean, performant code that brings designs to life with attention to every interaction.</p>
+                    <ul class="service-list">
+                        <li>Frontend Development</li>
+                        <li>Responsive Web</li>
+                        <li>Animation &amp; Motion</li>
+                        <li>CMS Integration</li>
+                    </ul>
+                </div>
+                <div class="service-card reveal reveal-delay-2">
+                    <span class="service-icon">&#9651;</span>
+                    <h3 class="service-title">Strategy</h3>
+                    <p class="service-desc">Thoughtful research and planning that ensures every design decision is intentional.</p>
+                    <ul class="service-list">
+                        <li>User Research</li>
+                        <li>Information Architecture</li>
+                        <li>Content Strategy</li>
+                        <li>Consulting</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    <!-- ============================================
-         JAVASCRIPT
-         ============================================ -->
+    <section class="testimonials" id="testimonials">
+        <div class="grid-container">
+            <div class="section-header reveal">
+                <span class="section-number">04</span>
+                <span class="section-title">Kind Words</span>
+                <span class="section-line"></span>
+            </div>
+            <div class="testimonial-grid">
+                <div class="testimonial-quote reveal">
+                    <p class="testimonial-text">"Working with them was a masterclass in restraint. They stripped our product down to what truly mattered, and the result speaks for itself &#8212; conversion up 40%, bounce rate cut in half."</p>
+                    <div class="testimonial-author">Sarah Chen</div>
+                    <div class="testimonial-role">CEO, Volta Energy</div>
+                </div>
+                <div class="testimonial-meta">
+                    <div class="testimonial-stat reveal reveal-delay-1">
+                        <div class="testimonial-stat-number">+40%</div>
+                        <div class="testimonial-stat-label">Conversion rate increase</div>
+                    </div>
+                    <div class="testimonial-stat reveal reveal-delay-2">
+                        <div class="testimonial-stat-number">-50%</div>
+                        <div class="testimonial-stat-label">Bounce rate reduction</div>
+                    </div>
+                    <div class="testimonial-stat reveal reveal-delay-3">
+                        <div class="testimonial-stat-number">3x</div>
+                        <div class="testimonial-stat-label">User engagement</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact" id="contact">
+        <div class="grid-container">
+            <div class="section-header reveal">
+                <span class="section-number">05</span>
+                <span class="section-title">Get in Touch</span>
+                <span class="section-line"></span>
+            </div>
+            <div class="contact-grid">
+                <div class="contact-heading reveal">
+                    <h2 class="contact-title">Let's work<br>together.</h2>
+                    <p class="contact-subtitle">Have a project in mind? I'd love to hear about it. Let's create something meaningful together.</p>
+                </div>
+                <div class="contact-info">
+                    <div class="contact-block reveal reveal-delay-1">
+                        <div class="contact-label">Email</div>
+                        <a href="mailto:hello@portfolio.com" class="contact-value">hello@portfolio.com</a>
+                    </div>
+                    <div class="contact-block reveal reveal-delay-2">
+                        <div class="contact-label">Phone</div>
+                        <a href="tel:+14155550100" class="contact-value">+1 (415) 555-0100</a>
+                    </div>
+                    <div class="contact-block reveal reveal-delay-3">
+                        <div class="contact-label">Social</div>
+                        <div style="display:flex;flex-direction:column;gap:4px;">
+                            <a href="#" class="contact-value">Twitter / X</a>
+                            <a href="#" class="contact-value">LinkedIn</a>
+                            <a href="#" class="contact-value">Dribbble</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="grid-container">
+            <div class="footer-inner">
+                <div class="footer-left">&copy; 2026 Portfolio. All rights reserved.</div>
+                <div class="footer-right">
+                    <a href="#" class="footer-link">Twitter</a>
+                    <a href="#" class="footer-link">LinkedIn</a>
+                    <a href="#" class="footer-link">Dribbble</a>
+                    <a href="#" class="footer-link">GitHub</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
     <script>
     (function() {
         'use strict';
 
-        // ============================================
-        // LOADING SCREEN
-        // ============================================
-        const loadingScreen = document.getElementById('loadingScreen');
-        const loadingFill = document.getElementById('loadingFill');
-        const loadingPercent = document.getElementById('loadingPercent');
-        let loadProgress = 0;
-
-        function updateLoading() {
-            loadProgress += Math.random() * 15 + 5;
-            if (loadProgress >= 100) {
-                loadProgress = 100;
-                loadingFill.style.width = '100%';
-                loadingPercent.textContent = '100';
-                setTimeout(() => loadingScreen.classList.add('hidden'), 400);
-                return;
-            }
-            loadingFill.style.width = loadProgress + '%';
-            loadingPercent.textContent = String(Math.floor(loadProgress)).padStart(2, '0');
-            setTimeout(updateLoading, 100 + Math.random() * 200);
-        }
-        setTimeout(updateLoading, 300);
-
-        // ============================================
-        // FILM GRAIN
-        // ============================================
-        const grainCanvas = document.getElementById('grainCanvas');
-        const grainCtx = grainCanvas.getContext('2d');
-
-        function resizeGrain() {
-            grainCanvas.width = window.innerWidth / 2;
-            grainCanvas.height = window.innerHeight / 2;
-        }
-        resizeGrain();
-        window.addEventListener('resize', resizeGrain);
-
-        function renderGrain() {
-            const w = grainCanvas.width;
-            const h = grainCanvas.height;
-            const imageData = grainCtx.createImageData(w, h);
-            const data = imageData.data;
-            for (let i = 0; i < data.length; i += 4) {
-                const v = Math.random() * 255;
-                data[i] = v;
-                data[i + 1] = v;
-                data[i + 2] = v;
-                data[i + 3] = 255;
-            }
-            grainCtx.putImageData(imageData, 0, 0);
-            requestAnimationFrame(renderGrain);
-        }
-        renderGrain();
-
-        // ============================================
-        // CURSOR FOLLOWER
-        // ============================================
-        const cursorFollower = document.getElementById('cursorFollower');
-        document.addEventListener('mousemove', (e) => {
-            cursorFollower.style.left = e.clientX + 'px';
-            cursorFollower.style.top = e.clientY + 'px';
-        });
-
-        // ============================================
-        // 3D AERO-VISUALIZER (Three.js)
-        // ============================================
-        const aeroCanvas = document.getElementById('aero-canvas');
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({
-            canvas: aeroCanvas,
-            antialias: true,
-            alpha: true
-        });
-        renderer.setSize(window.innerWidth - 80, window.innerHeight);
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-        renderer.setClearColor(0x000000, 0);
-
-        camera.position.set(5, 3, 8);
-        camera.lookAt(0, 0, 0);
-
-        // Ambient light
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.15);
-        scene.add(ambientLight);
-
-        // Directional lights
-        const dirLight1 = new THREE.DirectionalLight(0xffffff, 0.4);
-        dirLight1.position.set(5, 10, 5);
-        scene.add(dirLight1);
-
-        const dirLight2 = new THREE.DirectionalLight(0xFF0032, 0.2);
-        dirLight2.position.set(-5, 3, -5);
-        scene.add(dirLight2);
-
-        // ---- F1 CAR CHASSIS (Procedural) ----
-        // Main body - elongated low-profile shape
-        const bodyGeometry = new THREE.BoxGeometry(4.5, 0.3, 1.2);
-        const bodyMaterial = new THREE.MeshPhysicalMaterial({
-            color: 0x111111,
-            metalness: 0.9,
-            roughness: 0.2,
-            clearcoat: 0.8,
-            clearcoatRoughness: 0.1,
-        });
-        const body = new THREE.Mesh(bodyGeometry, bodyMaterial);
-        body.position.y = 0.3;
-        scene.add(body);
-
-        // Nose cone
-        const noseGeometry = new THREE.ConeGeometry(0.5, 2.0, 4);
-        const noseMaterial = bodyMaterial.clone();
-        const nose = new THREE.Mesh(noseGeometry, noseMaterial);
-        nose.rotation.z = Math.PI / 2;
-        nose.position.set(3.2, 0.3, 0);
-        scene.add(nose);
-
-        // Cockpit
-        const cockpitGeometry = new THREE.SphereGeometry(0.4, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2);
-        const cockpitMaterial = new THREE.MeshPhysicalMaterial({
-            color: 0x080808,
-            metalness: 0.1,
-            roughness: 0.05,
-            transparent: true,
-            opacity: 0.6,
-            clearcoat: 1.0,
-        });
-        const cockpit = new THREE.Mesh(cockpitGeometry, cockpitMaterial);
-        cockpit.position.set(0.5, 0.45, 0);
-        cockpit.scale.set(1.5, 1, 1);
-        scene.add(cockpit);
-
-        // Rear wing
-        const wingGeometry = new THREE.BoxGeometry(0.1, 0.6, 1.6);
-        const wingMaterial = new THREE.MeshPhysicalMaterial({
-            color: 0x1a1a1a,
-            metalness: 0.8,
-            roughness: 0.3,
-        });
-        const rearWing = new THREE.Mesh(wingGeometry, wingMaterial);
-        rearWing.position.set(-2.2, 0.9, 0);
-        scene.add(rearWing);
-
-        // Rear wing endplates
-        const endplateGeometry = new THREE.BoxGeometry(0.4, 0.8, 0.05);
-        const endplate1 = new THREE.Mesh(endplateGeometry, wingMaterial);
-        endplate1.position.set(-2.2, 0.8, 0.8);
-        scene.add(endplate1);
-
-        const endplate2 = new THREE.Mesh(endplateGeometry, wingMaterial);
-        endplate2.position.set(-2.2, 0.8, -0.8);
-        scene.add(endplate2);
-
-        // Front wing
-        const frontWingGeometry = new THREE.BoxGeometry(0.3, 0.08, 2.0);
-        const frontWing = new THREE.Mesh(frontWingGeometry, wingMaterial);
-        frontWing.position.set(3.0, 0.1, 0);
-        scene.add(frontWing);
-
-        // Wheels (4)
-        const wheelGeometry = new THREE.CylinderGeometry(0.33, 0.33, 0.28, 24);
-        const wheelMaterial = new THREE.MeshPhysicalMaterial({
-            color: 0x222222,
-            metalness: 0.3,
-            roughness: 0.8,
-        });
-
-        const wheelPositions = [
-            [1.5, 0.05, 0.9], [1.5, 0.05, -0.9],
-            [-1.2, 0.05, 0.9], [-1.2, 0.05, -0.9]
-        ];
-
-        wheelPositions.forEach(pos => {
-            const wheel = new THREE.Mesh(wheelGeometry, wheelMaterial);
-            wheel.rotation.x = Math.PI / 2;
-            wheel.position.set(...pos);
-            scene.add(wheel);
-        });
-
-        // Halo
-        const haloGeometry = new THREE.TorusGeometry(0.35, 0.025, 8, 24, Math.PI);
-        const haloMaterial = new THREE.MeshPhysicalMaterial({
-            color: 0x333333,
-            metalness: 0.95,
-            roughness: 0.1,
-        });
-        const halo = new THREE.Mesh(haloGeometry, haloMaterial);
-        halo.position.set(0.5, 0.55, 0);
-        halo.rotation.y = Math.PI / 2;
-        scene.add(halo);
-
-        // Ground plane (reflective)
-        const groundGeometry = new THREE.PlaneGeometry(30, 30);
-        const groundMaterial = new THREE.MeshPhysicalMaterial({
-            color: 0x080808,
-            metalness: 0.9,
-            roughness: 0.5,
-        });
-        const ground = new THREE.Mesh(groundGeometry, groundMaterial);
-        ground.rotation.x = -Math.PI / 2;
-        ground.position.y = -0.28;
-        scene.add(ground);
-
-        // ---- CFD AIRFLOW PARTICLES ----
-        const particleCount = 3000;
-        const particlesGeometry = new THREE.BufferGeometry();
-        const particlePositions = new Float32Array(particleCount * 3);
-        const particleColors = new Float32Array(particleCount * 3);
-        const particleSpeeds = new Float32Array(particleCount);
-        const particlePhases = new Float32Array(particleCount);
-
-        for (let i = 0; i < particleCount; i++) {
-            particlePositions[i * 3] = (Math.random() - 0.3) * 14 - 2;
-            particlePositions[i * 3 + 1] = Math.random() * 3.5;
-            particlePositions[i * 3 + 2] = (Math.random() - 0.5) * 4;
-            particleSpeeds[i] = Math.random() * 0.08 + 0.02;
-            particlePhases[i] = Math.random() * Math.PI * 2;
-
-            // Color based on velocity magnitude (CFD visualization)
-            const speed = particleSpeeds[i];
-            if (speed > 0.07) {
-                // Fast - Red
-                particleColors[i * 3] = 1.0;
-                particleColors[i * 3 + 1] = 0.0;
-                particleColors[i * 3 + 2] = 0.2;
-            } else if (speed > 0.04) {
-                // Medium - White/Gray
-                particleColors[i * 3] = 0.7;
-                particleColors[i * 3 + 1] = 0.7;
-                particleColors[i * 3 + 2] = 0.7;
-            } else {
-                // Slow - Dark
-                particleColors[i * 3] = 0.3;
-                particleColors[i * 3 + 1] = 0.3;
-                particleColors[i * 3 + 2] = 0.35;
-            }
-        }
-
-        particlesGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
-        particlesGeometry.setAttribute('color', new THREE.BufferAttribute(particleColors, 3));
-
-        const particlesMaterial = new THREE.PointsMaterial({
-            size: 0.025,
-            vertexColors: true,
-            transparent: true,
-            opacity: 0.6,
-            blending: THREE.AdditiveBlending,
-        });
-
-        const particles = new THREE.Points(particlesGeometry, particlesMaterial);
-        scene.add(particles);
-
-        // ---- AIRFLOW STREAMLINES (Line geometry) ----
-        const streamlineCount = 20;
-        const streamlines = [];
-
-        for (let s = 0; s < streamlineCount; s++) {
-            const points = [];
-            const startZ = (Math.random() - 0.5) * 2.5;
-            const startY = Math.random() * 2 + 0.2;
-            const segments = 60;
-
-            for (let i = 0; i < segments; i++) {
-                const t = i / segments;
-                const x = -5 + t * 14;
-
-                // Flow deflection around car body
-                let yOffset = 0;
-                let zOffset = 0;
-                const carRegion = (x > -2.5 && x < 3.5);
-
-                if (carRegion) {
-                    const carDist = Math.abs(startY - 0.3);
-                    const deflection = Math.max(0, 1.0 - carDist * 0.8);
-                    yOffset = Math.sin(t * Math.PI) * deflection * 0.8;
-                    zOffset = Math.sin(t * Math.PI * 2) * 0.05 * (startZ > 0 ? 1 : -1);
-                }
-
-                points.push(new THREE.Vector3(
-                    x,
-                    startY + yOffset + Math.sin(t * 4 + s) * 0.02,
-                    startZ + zOffset
-                ));
-            }
-
-            const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
-            const intensity = Math.random() * 0.15 + 0.05;
-            const isRed = Math.random() > 0.7;
-            const lineMaterial = new THREE.LineBasicMaterial({
-                color: isRed ? 0xFF0032 : 0xF2F2F2,
-                transparent: true,
-                opacity: intensity,
-                blending: THREE.AdditiveBlending,
-            });
-            const line = new THREE.Line(lineGeometry, lineMaterial);
-            scene.add(line);
-            streamlines.push(line);
-        }
-
-        // ---- GRID LINES ON GROUND ----
-        const gridHelper = new THREE.GridHelper(20, 40, 0x111111, 0x0a0a0a);
-        gridHelper.position.y = -0.27;
-        scene.add(gridHelper);
-
-        // ---- CAMERA ANIMATION ----
-        let mouseX = 0, mouseY = 0;
-        document.addEventListener('mousemove', (e) => {
-            mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
-            mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
-        });
-
-        let aeroTime = 0;
-        function animateAero() {
-            requestAnimationFrame(animateAero);
-            aeroTime += 0.005;
-
-            // Camera orbits slowly + follows mouse
-            camera.position.x = 5 * Math.cos(aeroTime * 0.3) + mouseX * 2;
-            camera.position.z = 8 * Math.sin(aeroTime * 0.3) + mouseY * 1;
-            camera.position.y = 3 + Math.sin(aeroTime * 0.5) * 0.5 - mouseY * 0.5;
-            camera.lookAt(0, 0.3, 0);
-
-            // Animate particles (airflow)
-            const positions = particles.geometry.attributes.position.array;
-            for (let i = 0; i < particleCount; i++) {
-                positions[i * 3] += particleSpeeds[i];
-
-                // Wrap around
-                if (positions[i * 3] > 7) {
-                    positions[i * 3] = -7;
-                    positions[i * 3 + 1] = Math.random() * 3.5;
-                    positions[i * 3 + 2] = (Math.random() - 0.5) * 4;
-                }
-
-                // Deflect around car body
-                const px = positions[i * 3];
-                const py = positions[i * 3 + 1];
-                const pz = positions[i * 3 + 2];
-
-                if (px > -2.5 && px < 3.5 && py < 1.0 && Math.abs(pz) < 0.8) {
-                    positions[i * 3 + 1] += 0.02;
-                    if (pz > 0) positions[i * 3 + 2] += 0.005;
-                    else positions[i * 3 + 2] -= 0.005;
-                }
-
-                // Turbulence behind car
-                if (px > -2.5 && px < -1.0) {
-                    positions[i * 3 + 1] += Math.sin(aeroTime * 10 + particlePhases[i]) * 0.003;
-                    positions[i * 3 + 2] += Math.cos(aeroTime * 8 + particlePhases[i]) * 0.002;
-                }
-            }
-            particles.geometry.attributes.position.needsUpdate = true;
-
-            // Subtle car vibration (18,000 RPM)
-            body.position.y = 0.3 + Math.sin(aeroTime * 80) * 0.002;
-            body.rotation.z = Math.sin(aeroTime * 60) * 0.001;
-
-            renderer.render(scene, camera);
-        }
-        animateAero();
-
-        window.addEventListener('resize', () => {
-            camera.aspect = (window.innerWidth - 80) / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth - 80, window.innerHeight);
-        });
-
-        // ============================================
-        // SPEED-LINE SVG ANNOTATIONS
-        // ============================================
-        function generateSpeedLines() {
-            const svg = document.querySelector('#speedLines svg');
-            let paths = '';
-            for (let i = 0; i < 15; i++) {
-                const y = 150 + Math.random() * 700;
-                const x1 = Math.random() * 400 + 100;
-                const x2 = x1 + Math.random() * 800 + 200;
-                const opacity = Math.random() * 0.06 + 0.02;
-                const strokeWidth = Math.random() * 0.5 + 0.3;
-                paths += `<line x1="${x1}" y1="${y}" x2="${x2}" y2="${y + (Math.random()-0.5)*20}" stroke="rgba(242,242,242,${opacity})" stroke-width="${strokeWidth}" />`;
-            }
-            // Red accent lines
-            for (let i = 0; i < 4; i++) {
-                const y = 200 + Math.random() * 600;
-                const x1 = Math.random() * 300 + 200;
-                const x2 = x1 + Math.random() * 500 + 100;
-                paths += `<line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" stroke="rgba(255,0,50,0.04)" stroke-width="0.5" />`;
-            }
-            svg.innerHTML = paths;
-        }
-        generateSpeedLines();
-
-        // ============================================
-        // TELEMETRY CHART RENDERERS
-        // ============================================
-        function drawMiniChart(canvasId, data, color, filled) {
-            const canvas = document.getElementById(canvasId);
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            const rect = canvas.getBoundingClientRect();
-            canvas.width = rect.width * 2;
-            canvas.height = rect.height * 2;
-            ctx.scale(2, 2);
-
-            const w = rect.width;
-            const h = rect.height;
-            const max = Math.max(...data);
-            const min = Math.min(...data);
-            const range = max - min || 1;
-
-            ctx.beginPath();
-            data.forEach((val, i) => {
-                const x = (i / (data.length - 1)) * w;
-                const y = h - ((val - min) / range) * h * 0.8 - h * 0.1;
-                if (i === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-            });
-            ctx.strokeStyle = color;
-            ctx.lineWidth = 1;
-            ctx.stroke();
-
-            if (filled) {
-                ctx.lineTo(w, h);
-                ctx.lineTo(0, h);
-                ctx.closePath();
-                const gradient = ctx.createLinearGradient(0, 0, 0, h);
-                gradient.addColorStop(0, color.replace(')', ', 0.15)').replace('rgb', 'rgba'));
-                gradient.addColorStop(1, 'transparent');
-                ctx.fillStyle = gradient;
-                ctx.fill();
-            }
-        }
-
-        // Generate fake telemetry data
-        function generateData(base, variance, count) {
-            const data = [];
-            let val = base;
-            for (let i = 0; i < count; i++) {
-                val += (Math.random() - 0.48) * variance;
-                data.push(val);
-            }
-            return data;
-        }
-
-        const rpmData = generateData(18000, 200, 60);
-        const speedData = generateData(330, 15, 60);
-        const dfData = generateData(1800, 50, 60);
-        const fuelData = [];
-        for (let i = 0; i < 60; i++) fuelData.push(60 - i * 0.45 + Math.random() * 2);
-
-        function renderCharts() {
-            drawMiniChart('rpmChart', rpmData, 'rgb(242, 242, 242)', true);
-            drawMiniChart('speedChart', speedData, 'rgb(255, 0, 50)', true);
-            drawMiniChart('dfChart', dfData, 'rgb(242, 242, 242)', false);
-            drawMiniChart('fuelChart', fuelData, 'rgb(242, 242, 242)', true);
-
-            // DRS chart - on/off pattern
-            const drsData = [];
-            for (let i = 0; i < 80; i++) {
-                drsData.push(i % 20 < 12 ? 1 + Math.random() * 0.1 : 0.1 + Math.random() * 0.1);
-            }
-            drawMiniChart('drsChart', drsData, 'rgb(255, 0, 50)', true);
-        }
-
-        setTimeout(renderCharts, 500);
-        window.addEventListener('resize', () => setTimeout(renderCharts, 100));
-
-        // ============================================
-        // LIVE TELEMETRY VALUE UPDATES
-        // ============================================
-        function animateValue(elementId, base, variance, decimals, prefix, suffix) {
-            const el = document.getElementById(elementId);
-            if (!el) return;
-            setInterval(() => {
-                const val = base + (Math.random() - 0.5) * variance;
-                let formatted;
-                if (decimals === 0) {
-                    formatted = Math.floor(val).toLocaleString();
-                } else {
-                    formatted = val.toFixed(decimals);
-                }
-                // Keep the unit span if exists
-                const unitSpan = el.querySelector('.unit');
-                if (unitSpan) {
-                    el.childNodes[0].textContent = (prefix || '') + formatted;
-                } else {
-                    el.textContent = (prefix || '') + formatted + (suffix || '');
-                }
-            }, 800 + Math.random() * 400);
-        }
-
-        animateValue('rpmValue', 18247, 600, 0);
-        animateValue('speedValue', 342, 20, 0);
-        animateValue('dfValue', 1847, 80, 0);
-        animateValue('tireTempValue', 104.2, 5, 1);
-        animateValue('brakeTempValue', 847, 30, 0);
-        animateValue('ersValue', 78, 10, 0);
-        animateValue('fuelValue', 34.7, 2, 1);
-
-        // ============================================
-        // RACE PROGRESS SCRUBBER
-        // ============================================
-        // Variable-width stroke based on simulated speed data
-        function generateScrubberPath() {
-            const svg = document.getElementById('scrubberSVG');
-            const pathBg = document.getElementById('scrubberPath');
-            const pathActive = document.getElementById('scrubberPathActive');
-
-            const speedProfile = [];
-            for (let i = 0; i <= 100; i++) {
-                // Simulate speed: high on straights, low in corners
-                const t = i / 100;
-                let speed = 0.5;
-                // Straight 1
-                if (t > 0.05 && t < 0.2) speed = 0.9 + Math.random() * 0.1;
-                // Corner 1
-                if (t > 0.2 && t < 0.3) speed = 0.3 + Math.random() * 0.1;
-                // Straight 2
-                if (t > 0.3 && t < 0.5) speed = 0.85 + Math.random() * 0.1;
-                // Corner 2
-                if (t > 0.5 && t < 0.58) speed = 0.25 + Math.random() * 0.1;
-                // Straight 3
-                if (t > 0.58 && t < 0.75) speed = 0.95 + Math.random() * 0.05;
-                // Corner 3
-                if (t > 0.75 && t < 0.85) speed = 0.35 + Math.random() * 0.1;
-                // Final straight
-                if (t > 0.85) speed = 0.8 + Math.random() * 0.15;
-
-                speedProfile.push(speed);
-            }
-
-            let dBg = '';
-            let dActive = '';
-            const progress = 0.737;
-
-            speedProfile.forEach((speed, i) => {
-                const x = (i / 100) * 1000;
-                const y = 12 - speed * 8;
-                const yBottom = 12 + speed * 8;
-
-                if (i === 0) {
-                    dBg += `M ${x} ${y}`;
-                    dActive += `M ${x} ${y}`;
-                } else {
-                    dBg += ` L ${x} ${y}`;
-                    if (i / 100 <= progress) dActive += ` L ${x} ${y}`;
+        // Scroll reveal
+        const reveals = document.querySelectorAll('.reveal');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
                 }
             });
+        }, { root: null, rootMargin: '0px 0px -60px 0px', threshold: 0.1 });
+        reveals.forEach(el => observer.observe(el));
 
-            // Bottom part (mirror)
-            for (let i = speedProfile.length - 1; i >= 0; i--) {
-                const x = (i / 100) * 1000;
-                const yBottom = 12 + speedProfile[i] * 8;
-                dBg += ` L ${x} ${yBottom}`;
-            }
-            dBg += ' Z';
-
-            for (let i = Math.floor(progress * 100); i >= 0; i--) {
-                const x = (i / 100) * 1000;
-                const yBottom = 12 + speedProfile[i] * 8;
-                dActive += ` L ${x} ${yBottom}`;
-            }
-            dActive += ' Z';
-
-            pathBg.setAttribute('d', dBg);
-            pathBg.setAttribute('fill', 'rgba(242,242,242,0.03)');
-            pathBg.setAttribute('stroke', 'none');
-
-            pathActive.setAttribute('d', dActive);
-            pathActive.setAttribute('fill', 'rgba(255,0,50,0.15)');
-            pathActive.setAttribute('stroke', '#FF0032');
-            pathActive.setAttribute('stroke-width', '0.5');
-        }
-        generateScrubberPath();
-
-        // Lap markers
-        const markersContainer = document.getElementById('scrubberMarkers');
-        for (let i = 0; i <= 57; i += 5) {
-            const marker = document.createElement('span');
-            marker.className = 'scrubber-marker' + (i <= 42 ? ' active' : '');
-            marker.textContent = i === 0 ? 'S' : i;
-            markersContainer.appendChild(marker);
-        }
-
-        // ============================================
-        // CFD SIMULATION CANVAS
-        // ============================================
-        const cfdCanvas = document.getElementById('cfdCanvas');
-        const cfdCtx = cfdCanvas.getContext('2d');
-
-        function resizeCFD() {
-            const rect = cfdCanvas.parentElement.getBoundingClientRect();
-            cfdCanvas.width = rect.width * 2;
-            cfdCanvas.height = rect.height * 2;
-            cfdCtx.scale(2, 2);
-        }
-        resizeCFD();
-
-        // CFD particle system
-        const cfdParticles = [];
-        const cfdW = () => cfdCanvas.width / 2;
-        const cfdH = () => cfdCanvas.height / 2;
-
-        for (let i = 0; i < 800; i++) {
-            cfdParticles.push({
-                x: Math.random() * 1200,
-                y: Math.random() * 500,
-                vx: Math.random() * 2 + 1,
-                vy: (Math.random() - 0.5) * 0.5,
-                speed: Math.random(),
-                life: Math.random(),
+        // Nav active state
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-link');
+        function updateActiveNav() {
+            const scrollPos = window.scrollY + 200;
+            sections.forEach(section => {
+                const top = section.offsetTop;
+                const height = section.offsetHeight;
+                const id = section.getAttribute('id');
+                if (scrollPos >= top && scrollPos < top + height) {
+                    navLinks.forEach(link => {
+                        link.style.color = '';
+                        if (link.getAttribute('href') === '#' + id) {
+                            link.style.color = 'var(--black)';
+                        }
+                    });
+                }
             });
         }
+        window.addEventListener('scroll', updateActiveNav);
+        updateActiveNav();
 
-        function drawCFD() {
-            const w = cfdW();
-            const h = cfdH();
-            cfdCtx.setTransform(2, 0, 0, 2, 0, 0);
-            cfdCtx.clearRect(0, 0, w, h);
+        // Project hover image follow
+        const projectItems = document.querySelectorAll('.project-item');
+        const imageFollower = document.createElement('div');
+        imageFollower.className = 'project-image-container';
+        imageFollower.innerHTML = '<div style="width:100%;height:100%;background:var(--light-gray);display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--mid-gray);font-weight:500;letter-spacing:0.1em;text-transform:uppercase;">Preview</div>';
+        document.body.appendChild(imageFollower);
 
-            // Background gradient
-            const bg = cfdCtx.createLinearGradient(0, 0, w, h);
-            bg.addColorStop(0, 'rgba(8, 8, 8, 1)');
-            bg.addColorStop(1, 'rgba(15, 15, 15, 1)');
-            cfdCtx.fillStyle = bg;
-            cfdCtx.fillRect(0, 0, w, h);
-
-            // Draw car silhouette
-            cfdCtx.beginPath();
-            const carX = w * 0.25;
-            const carY = h * 0.5;
-            const carW = w * 0.5;
-            const carH = h * 0.08;
-
-            // Simplified F1 side profile
-            cfdCtx.moveTo(carX, carY);
-            cfdCtx.lineTo(carX + carW * 0.1, carY - carH * 0.5);
-            cfdCtx.lineTo(carX + carW * 0.15, carY - carH);
-            cfdCtx.lineTo(carX + carW * 0.25, carY - carH * 1.5);
-            cfdCtx.lineTo(carX + carW * 0.35, carY - carH * 2);
-            cfdCtx.lineTo(carX + carW * 0.45, carY - carH * 2.2);
-            cfdCtx.lineTo(carX + carW * 0.55, carY - carH * 1.5);
-            cfdCtx.lineTo(carX + carW * 0.7, carY - carH);
-            cfdCtx.lineTo(carX + carW * 0.8, carY - carH * 0.8);
-            cfdCtx.lineTo(carX + carW * 0.85, carY - carH * 2.5); // rear wing
-            cfdCtx.lineTo(carX + carW * 0.88, carY - carH * 2.5);
-            cfdCtx.lineTo(carX + carW * 0.88, carY - carH * 0.6);
-            cfdCtx.lineTo(carX + carW, carY);
-            cfdCtx.closePath();
-            cfdCtx.fillStyle = 'rgba(20, 20, 20, 1)';
-            cfdCtx.fill();
-            cfdCtx.strokeStyle = 'rgba(242, 242, 242, 0.1)';
-            cfdCtx.lineWidth = 0.5;
-            cfdCtx.stroke();
-
-            // Draw flow particles
-            cfdParticles.forEach(p => {
-                p.x += p.vx;
-                p.y += p.vy;
-
-                // Deflect around car
-                const relX = (p.x - carX) / carW;
-                const relY = p.y - carY;
-
-                if (relX > 0 && relX < 1 && Math.abs(relY) < carH * 3) {
-                    if (relY > -carH * 3 && relY < 0) {
-                        p.vy -= 0.15;
-                    } else if (relY >= 0 && relY < carH * 3) {
-                        p.vy += 0.08;
-                    }
-                }
-
-                // Turbulence behind car
-                if (relX > 0.9 && relX < 1.5) {
-                    p.vy += (Math.random() - 0.5) * 0.4;
-                    p.vx *= 0.98;
-                }
-
-                // Wrap
-                if (p.x > w + 10) {
-                    p.x = -10;
-                    p.y = Math.random() * h;
-                    p.vy = (Math.random() - 0.5) * 0.5;
-                    p.vx = Math.random() * 2 + 1;
-                }
-                if (p.y < 0) p.y = h;
-                if (p.y > h) p.y = 0;
-
-                // Color based on speed
-                const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
-                let r, g, b, a;
-                if (speed > 2.5) {
-                    r = 255; g = 0; b = 50; a = 0.7;
-                } else if (speed > 1.5) {
-                    r = 242; g = 200; b = 50; a = 0.5;
-                } else {
-                    r = 100; g = 150; b = 242; a = 0.4;
-                }
-
-                cfdCtx.beginPath();
-                cfdCtx.arc(p.x, p.y, 1.5, 0, Math.PI * 2);
-                cfdCtx.fillStyle = `rgba(${r},${g},${b},${a})`;
-                cfdCtx.fill();
-
-                // Trail
-                cfdCtx.beginPath();
-                cfdCtx.moveTo(p.x, p.y);
-                cfdCtx.lineTo(p.x - p.vx * 4, p.y - p.vy * 4);
-                cfdCtx.strokeStyle = `rgba(${r},${g},${b},${a * 0.3})`;
-                cfdCtx.lineWidth = 0.5;
-                cfdCtx.stroke();
+        projectItems.forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                imageFollower.style.opacity = '1';
+                imageFollower.style.transform = 'translateY(0)';
             });
-
-            // Pressure field visualization (color bands)
-            cfdCtx.globalAlpha = 0.03;
-            for (let i = 0; i < 8; i++) {
-                const gradient = cfdCtx.createRadialGradient(
-                    carX + carW * (0.2 + i * 0.08),
-                    carY - carH * (1 + Math.sin(Date.now() * 0.001 + i) * 0.5),
-                    0,
-                    carX + carW * (0.2 + i * 0.08),
-                    carY,
-                    80
-                );
-                const isHigh = i % 3 === 0;
-                gradient.addColorStop(0, isHigh ? 'rgba(255,0,50,0.5)' : 'rgba(50,100,255,0.5)');
-                gradient.addColorStop(1, 'transparent');
-                cfdCtx.fillStyle = gradient;
-                cfdCtx.fillRect(0, 0, w, h);
-            }
-            cfdCtx.globalAlpha = 1.0;
-
-            // Technical annotations
-            cfdCtx.font = '8px "Space Mono", monospace';
-            cfdCtx.fillStyle = 'rgba(242, 242, 242, 0.15)';
-            cfdCtx.fillText('Cp: -2.41', carX + carW * 0.3, carY - carH * 3);
-            cfdCtx.fillText('Cp: +0.87', carX + carW * 0.1, carY + carH * 4);
-            cfdCtx.fillText('WAKE REGION', carX + carW * 0.92, carY - carH * 1.5);
-            cfdCtx.fillText('STAGNATION POINT', carX - 10, carY - 5);
-
-            // Measurement lines
-            cfdCtx.setLineDash([2, 4]);
-            cfdCtx.strokeStyle = 'rgba(255, 0, 50, 0.1)';
-            cfdCtx.lineWidth = 0.5;
-
-            // Vertical measurement
-            cfdCtx.beginPath();
-            cfdCtx.moveTo(carX + carW * 0.45, carY - carH * 5);
-            cfdCtx.lineTo(carX + carW * 0.45, carY + carH * 5);
-            cfdCtx.stroke();
-
-            // Horizontal measurement
-            cfdCtx.beginPath();
-            cfdCtx.moveTo(carX - 20, carY);
-            cfdCtx.lineTo(carX + carW + 40, carY);
-            cfdCtx.stroke();
-
-            cfdCtx.setLineDash([]);
-
-            requestAnimationFrame(drawCFD);
-        }
-        drawCFD();
-
-        window.addEventListener('resize', resizeCFD);
-
-        // ============================================
-        // SIDEBAR NAVIGATION
-        // ============================================
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', () => {
-                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
-                const target = document.getElementById(item.dataset.section);
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth' });
-                }
+            item.addEventListener('mouseleave', () => {
+                imageFollower.style.opacity = '0';
+                imageFollower.style.transform = 'translateY(10px)';
+            });
+            item.addEventListener('mousemove', (e) => {
+                imageFollower.style.left = e.clientX + 20 + 'px';
+                imageFollower.style.top = e.clientY - 100 + 'px';
             });
         });
 
-        // Active section detection on scroll
-        const sections = ['hero', 'telemetry', 'race', 'cfd', 'log'];
+        // Stats counter animation
+        const statNumbers = document.querySelectorAll('.stat-number');
+        function animateCounter(el) {
+            const text = el.textContent;
+            const match = text.match(/(\d+)/);
+            if (!match) return;
+            const target = parseInt(match[0]);
+            const suffix = text.replace(match[0], '');
+            const duration = 1500;
+            const startTime = performance.now();
+            function update(now) {
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                el.textContent = Math.floor(eased * target) + suffix;
+                if (progress < 1) requestAnimationFrame(update);
+                else el.textContent = target + suffix;
+            }
+            requestAnimationFrame(update);
+        }
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounter(entry.target);
+                    statsObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+        statNumbers.forEach(el => statsObserver.observe(el));
+
+        // Navbar shadow on scroll
+        const nav = document.querySelector('.nav');
         window.addEventListener('scroll', () => {
-            const scrollPos = window.scrollY + window.innerHeight / 3;
-            sections.forEach(id => {
-                const section = document.getElementById(id);
-                if (section) {
-                    const top = section.offsetTop + 80; // sidebar offset
-                    const bottom = top + section.offsetHeight;
-                    const navItem = document.querySelector(`[data-section="${id}"]`);
-                    if (scrollPos >= top && scrollPos < bottom) {
-                        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-                        if (navItem) navItem.classList.add('active');
-                    }
-                }
-            });
+            nav.style.boxShadow = window.scrollY > 50 ? '0 1px 0 rgba(0,0,0,0.04)' : 'none';
         });
-
-        // ============================================
-        // ENGINEERING LOG - LIVE UPDATES
-        // ============================================
-        const logMessages = [
-            { type: 'info', msg: 'Telemetry packet received: 1024 bytes, checksum valid' },
-            { type: 'info', msg: 'Front wing AoA adjusted: 7.2&deg; &rarr; 7.4&deg;' },
-            { type: 'warn', msg: 'Hydraulic pressure fluctuation detected: +0.3 bar transient' },
-            { type: 'info', msg: 'Lap time prediction: 1:18.442 (based on current sector pace)' },
-            { type: 'crit', msg: 'MGU-K thermal limit approaching: 142&deg;C / 150&deg;C max' },
-            { type: 'info', msg: 'DRS detection zone: gap to car ahead 0.847s' },
-            { type: 'warn', msg: 'Rear tire degradation rate: 0.04s/lap (above target 0.03s/lap)' },
-            { type: 'info', msg: 'Wind speed update: 4.2 m/s headwind at turn 7' },
-            { type: 'info', msg: 'Battery SOC: 4.2 MJ available for deployment' },
-            { type: 'crit', msg: 'Gearbox vibration anomaly detected: sensor G4 +12% vs baseline' },
-        ];
-
-        function addLogEntry() {
-            const logContainer = document.getElementById('logEntries');
-            const msg = logMessages[Math.floor(Math.random() * logMessages.length)];
-            const now = new Date();
-            const time = now.toTimeString().split(' ')[0] + '.' + String(now.getMilliseconds()).padStart(3, '0');
-
-            const entry = document.createElement('div');
-            entry.className = 'log-entry';
-            entry.style.opacity = '0';
-            entry.style.transform = 'translateY(-10px)';
-            entry.innerHTML = `
-                <span class="log-time">${time}</span>
-                <span class="log-type ${msg.type}">${msg.type.toUpperCase()}</span>
-                <span class="log-msg">${msg.msg}</span>
-            `;
-
-            logContainer.insertBefore(entry, logContainer.firstChild);
-
-            // Animate in
-            requestAnimationFrame(() => {
-                entry.style.transition = 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
-                entry.style.opacity = '1';
-                entry.style.transform = 'translateY(0)';
-            });
-
-            // Keep max 15 entries
-            while (logContainer.children.length > 15) {
-                logContainer.removeChild(logContainer.lastChild);
-            }
-        }
-
-        setInterval(addLogEntry, 3000 + Math.random() * 2000);
-
-        // ============================================
-        // INK-TRAP TITLE PARALLAX
-        // ============================================
-        const inkTrapTitle = document.getElementById('inkTrapTitle');
-        window.addEventListener('scroll', () => {
-            const scrollY = window.scrollY;
-            inkTrapTitle.style.transform = `translateX(${scrollY * 0.15}px)`;
-            inkTrapTitle.style.opacity = Math.max(0.02, 0.06 - scrollY * 0.00005);
-        });
-
-        // ============================================
-        // CFD STAT VALUE ANIMATIONS
-        // ============================================
-        setInterval(() => {
-            const cd = document.getElementById('cdValue');
-            const cl = document.getElementById('clValue');
-            const pr = document.getElementById('prValue');
-            const bl = document.getElementById('blValue');
-
-            if (cd) cd.textContent = (0.73 + (Math.random() - 0.5) * 0.02).toFixed(3);
-            if (cl) cl.textContent = (-3.42 + (Math.random() - 0.5) * 0.1).toFixed(2);
-            if (pr) {
-                const val = (87.3 + (Math.random() - 0.5) * 2).toFixed(1);
-                pr.innerHTML = val + '<span style="font-size:14px; opacity:0.4;">%</span>';
-            }
-            if (bl) {
-                const val = (12.4 + (Math.random() - 0.5) * 1).toFixed(1);
-                bl.innerHTML = val + ' <span style="font-size:12px; opacity:0.4;">mm</span>';
-            }
-        }, 1200);
-
     })();
     </script>
 </body>
